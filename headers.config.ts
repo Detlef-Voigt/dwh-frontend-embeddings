@@ -13,7 +13,8 @@ function headers({
     'Content-Security-Policy': cspBuilder({
       directives: {
         'base-uri': "'none'",
-        'default-src': ["'self'", 'data:', 'https:', 'wss:'],
+        // 'default-src': ["'self'", 'data:', 'https:', 'wss:'],
+        'default-src': ["'self'", 'data:', 'https:', 'wss:', 'http://localhost:8000'],
         'img-src': ["'self'", 'data:', 'https:', 'blob:'],
         'style-src': ["'self'", 'data:', 'https:', 'wss:', "'unsafe-inline'"],
         'script-src': scriptSrc,

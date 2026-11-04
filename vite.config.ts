@@ -91,6 +91,9 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.PISA_SALES_API_URL': JSON.stringify(
         env.PISA_SALES_API_URL,
       ),
+      'import.meta.env.DWH_ANALYTICS_EMBEDDING_API_URL': JSON.stringify(
+        env.DWH_ANALYTICS_EMBEDDING_API_URL,
+      ),
     },
     html: {
       ...(mode === 'development' && { cspNonce: DEV_CSP_NONCE }),
