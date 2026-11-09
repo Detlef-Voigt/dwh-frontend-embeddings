@@ -20,6 +20,7 @@ export const QuicksightDashboardEmbed = connect(
       let cancelled = false
       let timeoutId: ReturnType<typeof setTimeout>
       setIsLoading(true)
+      setError(null)
 
       fetchQuicksightEmbedUrl(dashboardId)
         .then(async ({ embedUrl, expiresAt }) => {
@@ -42,7 +43,10 @@ export const QuicksightDashboardEmbed = connect(
           )
         })
         .catch((e) => {
-          if (!cancelled) setError(e)
+          if (!cancelled) {
+            setIsLoading(false)
+            setError(e)
+          }
         })
 
       return () => {

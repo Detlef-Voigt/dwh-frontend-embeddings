@@ -5,7 +5,10 @@ import { EditorNote } from '../../Components/EditorNote'
 import { DataErrorEditorNote } from '../../Components/DataErrorEditorNote'
 import { Loading } from '../../Components/Loading'
 import { QuicksightDashboardEmbed } from '../../Components/QuicksightDashboardEmbed'
-import { fetchQuicksightDashboardIds } from '../../Data/Quicksight/fetchQuicksightDashboardIds'
+import {
+  fetchQuicksightDashboards,
+  QuicksightDashboard,
+} from '../../Data/Quicksight/fetchQuicksightDashboards'
 
 provideComponent(QuicksightDashboardWithSelectionWidget, ({ widget }) => (
   <WidgetTag>
@@ -21,7 +24,9 @@ const QuicksightDashboardSelection = connect(
   }: {
     initialDashboardId: string | null
   }) {
-    const [dashboardIds, setDashboardIds] = useState<string[] | null>(null)
+    const [dashboards, setDashboards] = useState<
+      QuicksightDashboard[] | null
+    >(null)
     const [error, setError] = useState<unknown>(null)
     const [selectedDashboardId, setSelectedDashboardId] = useState<
       string | null
@@ -30,14 +35,15 @@ const QuicksightDashboardSelection = connect(
     useEffect(() => {
       let cancelled = false
 
-      fetchQuicksightDashboardIds()
-        .then((ids) => {
+      fetchQuicksightDashboards()
+        .then((fetchedDashboards) => {
           if (cancelled) return
-          setDashboardIds(ids)
+          setDashboards(fetchedDashboards)
           setSelectedDashboardId(
-            (initialDashboardId && ids.includes(initialDashboardId)
+            (initialDashboardId &&
+            fetchedDashboards.some((d) => d.id === initialDashboardId)
               ? initialDashboardId
-              : ids[0]) ?? null,
+              : fetchedDashboards[0]?.id) ?? null,
           )
         })
         .catch((e) => {
@@ -50,8 +56,8 @@ const QuicksightDashboardSelection = connect(
     }, [initialDashboardId])
 
     if (error) return <DataErrorEditorNote error={error} />
-    if (!dashboardIds) return <Loading />
-    if (dashboardIds.length === 0) {
+    if (!dashboards) return <Loading />
+    if (dashboards.length === 0) {
       return <EditorNote>No dashboards are available to select.</EditorNote>
     }
 
@@ -62,9 +68,9 @@ const QuicksightDashboardSelection = connect(
           value={selectedDashboardId ?? ''}
           onChange={(e) => setSelectedDashboardId(e.target.value)}
         >
-          {dashboardIds.map((id) => (
-            <option value={id} key={id}>
-              {id}
+          {dashboards.map((dashboard) => (
+            <option value={dashboard.id} key={dashboard.id}>
+              {dashboard.name}
             </option>
           ))}
         </select>
